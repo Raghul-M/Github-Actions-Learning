@@ -38,6 +38,9 @@ jobs:
         else
           git checkout -b ${{ github.event.inputs.release_branch }}
         fi
+        
+    - name: Print environment variables
+      run: env
 
     - name: Push to release branch
       env:
