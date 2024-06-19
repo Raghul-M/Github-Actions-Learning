@@ -7,6 +7,9 @@ on:
         description: 'Branch to push to'
         required: true
 
+env:
+  ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+
 jobs:
   push-release-branch:
     runs-on: ubuntu-latest
@@ -42,9 +45,7 @@ jobs:
     - name: Print environment variables
       run: env
 
-    - name: Push to release branch
-      env:
-        ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+    - name: Push to release branch  
       run: |
         git remote set-url origin https://x-access-token:${{ secrets.ACTIONS_PAT }}@github.com/${{ github.repository }}.git
         git push origin ${{ github.event.inputs.release_branch }}
