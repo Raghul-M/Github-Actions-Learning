@@ -1,10 +1,13 @@
-name: Push to Release Branch v1
+name: Push to Release Branch & Cherry Pick commits
 
 on:
   workflow_dispatch:
     inputs:
       release_branch:
         description: 'Branch to push to'
+        required: true
+      cherry_pick_commits:
+        description: 'Commits to cherry-pick'
         required: true
 
 env:
@@ -21,7 +24,7 @@ jobs:
       run: |
         git config --global user.name '${{ github.actor }}'
         git config --global user.email '${{ github.actor }}@users.noreply.github.com'
-
+        
     - name: Fetch all branches
       run: git fetch --all
 
@@ -33,7 +36,6 @@ jobs:
         else
           echo "branch_exists=false" >> $GITHUB_ENV
         fi
-
     - name: Create or checkout branch
       run: |
         if [ "$branch_exists" = "true" ]; then
@@ -41,6 +43,10 @@ jobs:
         else
           git checkout -b ${{ github.event.inputs.release_branch }}
         fi
+
+    - name: Cherry-pick commits
+      run: |
+        git cherry-pick ${{ github.event.inputs.cherry_pick_commits }}
 
     - name: Push to release branch  
       run: |
