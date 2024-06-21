@@ -1,0 +1,25 @@
+name: Push to Release Branch
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_branch:
+        description: 'Branch to push to'
+        required: true
+
+jobs:
+  push-release-branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up Git
+      run: |
+        git config --global user.name '${{ github.actor }}'
+        git config --global user.email '${{ github.actor }}@users.noreply.github.com'
+
+    - name: Push to release branch
+      run: |
+        git checkout ${{ github.event.inputs.release_branch }}
+        git push origin ${{ github.event.inputs.release_branch }}
