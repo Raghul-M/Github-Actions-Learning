@@ -30,24 +30,25 @@ on:
 
 env:
   ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
-  
 
 jobs:
-  sync-and-pr:
+  sync-branches:
     runs-on: ubuntu-latest
+    name: Syncing branches
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: Raghul-M/${{ github.event.inputs.sync_repo }}
           token: ${{ secrets.ACTIONS_PAT }}
 
-      - name: Sync release with main
-        run: |
-          git checkout ${{ github.event.inputs.main_branch }}
-          git pull origin ${{ github.event.inputs.main_branch }}
-          git checkout ${{ github.event.inputs.release_branch }}
-          git merge ${{ github.event.inputs.main_branch }}
-          git push origin ${{ github.event.inputs.release_branch }}
-
-      
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Create Sync PR
+        uses: sudoStatus200/create-sync-pr@0.3.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+          SOURCE_BRANCH: ${{ github.event.inputs.main_branch }}
+          TARGET_BRANCH: ${{ github.event.inputs.release_branch }}
