@@ -49,21 +49,11 @@ jobs:
     - name: Fetch all branches
       run: git fetch --all
 
-    - name: Checkout release branch
-      run: git checkout ${{ github.event.inputs.release_branch }}
+    - name: Create Sync PR
+      uses: sudoStatus200/create-sync-pr@0.3.1
+      with:
+        GITHUB_TOKEN: ${{secrets.ACTIONS_PAT}}
+        SOURCE_BRANCH: ${{ github.event.inputs.main_branch }}
+        TARGET_BRANCH: ${{ github.event.inputs.release_branch }}
 
-    - name: Merge main into release
-      run: |
-        git merge origin/${{ github.event.inputs.main_branch }}
-        if [ $? -eq 0 ]; then
-          echo "No conflicts, pushing the changes."
-        else
-          echo "Merge conflicts detected, aborting the merge."
-          git merge --abort
-          exit 1
-        fi
     
-    - name: Push changes
-      if: success()
-      run: |
-        git push https://x-access-token:${{ secrets.ACTIONS_PAT }}@github.com/Raghul-M/${{ github.event.inputs.sync_repo }} ${{ github.event.inputs.release_branch }}
