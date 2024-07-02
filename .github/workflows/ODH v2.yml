@@ -64,9 +64,9 @@ jobs:
         run: |
           git checkout ${{ github.event.inputs.release_branch }}
 
-      - name: Merge main into release
+      - name: Synchronize main into release branch
         run: |
-          git merge origin/${{ github.event.inputs.main_branch }} --no-edit
+          gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }}
 
       - name: Push changes
         if: success()
