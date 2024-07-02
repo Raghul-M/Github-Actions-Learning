@@ -83,8 +83,7 @@ jobs:
           --base ${{ github.event.inputs.release_branch }} \
           --title "Main to RElease branch merge commits" \
           --body "$(echo -e "This is an automated PR created by GitHub Actions from the branch ${{ github.event.inputs.release_branch }}")"
-        env:
-          GH_TOKEN: ${{ secrets.ACTIONS_PAT }}
+ 
 
 
 
