@@ -1,0 +1,74 @@
+name: Push to Release Branch Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_repo:
+        description: 'Select Repository'
+        required: true
+        type: choice
+        options:
+          - 'Github-Actions-Learning'
+          - 'Test-GH'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      main_branch:
+        description: 'Main branch to pull from'
+        default: 'main'
+        required: true
+      release_branch:
+        description: 'Branch to push to [release branch]'
+        required: true
+
+env:
+  ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+
+jobs:
+  push-release-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+          token: ${{ secrets.ACTIONS_PAT }}
+      
+      - name: Set up GitHub CLI
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install GitHub CLI
+        run: npm install -g gh
+
+      - name: Print current repository
+        run: git remote -v
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
+      - name: Fetch all branches
+        run: git fetch --all
+
+      - name: Checkout release branch
+        run: |
+          git checkout ${{ github.event.inputs.release_branch }}
+
+      - name: Synchronize main into release branch
+        run: |
+          gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }} --branch=${{ github.event.inputs.main_branch }} --allow-unrelated-histories
+
+      - name: Push changes
+        if: success()
+        run: |
+          git push origin ${{ github.event.inputs.release_branch }}

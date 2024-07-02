@@ -1,0 +1,54 @@
+name: Sync Release with Main and Create PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_repo:
+        description: 'Select Repository'
+        required: true
+        type: choice
+        options:
+          - 'Github-Actions-Learning'
+          - 'Test-GH'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      main_branch:
+        description: 'Main branch to pull from'
+        default: 'main'
+        required: true
+      release_branch:
+        description: 'Branch to push to [release branch]'
+        required: true
+
+env:
+  ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+
+jobs:
+  sync-branches:
+    runs-on: ubuntu-latest
+    name: Syncing branches
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+          token: ${{ secrets.ACTIONS_PAT }}
+
+      - name: Set up Node
+        uses: actions/setup-node@v1
+        with:
+          node-version: 14
+      - name: Create Sync PR
+        uses: sudoStatus200/create-sync-pr@0.3.1
+        with:
+          GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+          SOURCE_BRANCH: ${{ github.event.inputs.main_branch }}
+          TARGET_BRANCH: ${{ github.event.inputs.release_branch }}
