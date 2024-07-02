@@ -1,4 +1,4 @@
-name: Sync Release with Main 
+name: v1- Sync Release with Main 
 
 on:
   workflow_dispatch:
@@ -51,17 +51,19 @@ jobs:
         with:
             repository: Raghul-M/${{ github.event.inputs.sync_repo }}
             token: ${{ secrets.ACTIONS_PAT }}
+            fetch-depth: 0 # Let's get all the branches
 
       - name: Check the branches
         run: git branch -a
+        
+      - name: Merge Master to Production branch
+        uses: devvspaces/merge-branches@v1
+        with:
+          token: ${{ github.token }}
+          from_branch: ${{ github.event.inputs.release_branch }}
+          to_branch:  ${{ github.event.inputs.release_branch }}
 
-      - name: Checkout release branch and Sync release with main
-        run: |
-           git pull origin main
-           git checkout ${{ github.event.inputs.release_branch }}
-           git pull origin  ${{ github.event.inputs.release_branch }}
-           git merge ${{ github.event.inputs.main_branch }}
-           git push origin ${{ github.event.inputs.release_branch }}
+      
 
 
 
