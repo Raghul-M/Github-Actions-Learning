@@ -8,8 +8,8 @@ on:
         required: true
         type: choice
         options:
-          - 'openvino_model_server'
-          - 'kserve'
+          - 'Github-Actions-Learning'
+          - 'Test-GH'
           - 'modelmesh'
           - 'caikit-tgis-serving'
           - 'openvino'
