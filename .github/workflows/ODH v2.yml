@@ -35,34 +35,40 @@ jobs:
   push-release-branch:
     runs-on: ubuntu-latest
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
-      with:
-        repository: Raghul-M/${{ github.event.inputs.sync_repo }}
-        token: ${{ secrets.ACTIONS_PAT }}
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+          token: ${{ secrets.ACTIONS_PAT }}
+      
+      - name: Set up GitHub CLI
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
 
-    - name: Print current repository
-      run:  git remote -v
+      - name: Install GitHub CLI
+        run: npm install -g gh
 
-    - name: Set up Git
-      run: |
-        git config --global user.name 'github-actions'
-        git config --global user.email 'github-actions@github.com'
+      - name: Print current repository
+        run: git remote -v
 
-    - name: Fetch all branches
-      run: git fetch --all
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
 
-    - name: Checkout release branch
-      run: |
-        git fetch origin
-        git checkout ${{ github.event.inputs.release_branch }}
+      - name: Fetch all branches
+        run: git fetch --all
 
-    - name: Merge main into release
-      run: |
-        git merge ${{ github.event.inputs.main_branch }} --allow-unrelated-histories
-        git commit -am "Sync to main Branch to release Branch"
-    
-    - name: Push changes
-      if: success()
-      run: |
-        git push  ${{ github.event.inputs.release_branch }}
+      - name: Checkout release branch
+        run: |
+          git checkout ${{ github.event.inputs.release_branch }}
+
+      - name: Merge main into release
+        run: |
+          git merge origin/${{ github.event.inputs.main_branch }} --no-edit
+
+      - name: Push changes
+        if: success()
+        run: |
+          git push origin ${{ github.event.inputs.release_branch }}
