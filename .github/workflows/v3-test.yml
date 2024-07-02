@@ -48,6 +48,6 @@ jobs:
             type: now
             from_branch: ${{ github.event.inputs.main_branch }}
             target_branch: ${{ github.event.inputs.release_branch }}
-            github_token: ${{ secrets.GITHUB_TOKEN }}
+            github_token: ${{ secrets.ACTIONS_PAT }}
 
       
