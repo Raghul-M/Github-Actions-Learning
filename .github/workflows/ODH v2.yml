@@ -1,0 +1,69 @@
+name: Push to Release Branch Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_repo:
+        description: 'Select Repository'
+        required: true
+        type: choice
+        options:
+          - 'openvino_model_server'
+          - 'kserve'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      main_branch:
+        description: 'Main branch to pull from'
+        default: 'main'
+        required: true
+      release_branch:
+        description: 'Branch to push to [release branch]'
+        required: true
+
+env:
+  ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+
+jobs:
+  push-release-branch:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      with:
+        repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+        token: ${{ secrets.ACTIONS_PAT }}
+
+    - name: Set up Git
+      run: |
+        git config --global user.name 'github-actions'
+        git config --global user.email 'github-actions@github.com'
+
+    - name: Fetch all branches
+      run: git fetch --all
+
+    - name: Checkout release branch
+      run: git checkout ${{ github.event.inputs.release_branch }}
+
+    - name: Merge main into release
+      run: |
+        git merge origin/${{ github.event.inputs.main_branch }}
+        if [ $? -eq 0 ]; then
+          echo "No conflicts, pushing the changes."
+        else
+          echo "Merge conflicts detected, aborting the merge."
+          git merge --abort
+          exit 1
+        fi
+    
+    - name: Push changes
+      if: success()
+      run: |
+        git push https://x-access-token:${{ secrets.ACTIONS_PAT }}@github.com/Raghul-M/${{ github.event.inputs.sync_repo }} ${{ github.event.inputs.release_branch }}
