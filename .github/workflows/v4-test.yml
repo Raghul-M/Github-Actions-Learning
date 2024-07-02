@@ -46,6 +46,9 @@ jobs:
             git config --global user.name 'github-actions'
             git config --global user.email 'github-actions@github.com'
 
+      - name: Check the branches
+        run: git branch -a
+
       - name: Checkout code
         uses: actions/checkout@v4
         with:
