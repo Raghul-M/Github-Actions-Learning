@@ -63,8 +63,7 @@ jobs:
           from_branch: ${{ github.event.inputs.main_branch }}
           to_branch:  ${{ github.event.inputs.release_branch }}
       
-      - name: Create Pull Request to apply the reverts
-        if: ${{ github.event.inputs.action_type == 'pr' }}
+      - name: Create Pull Request to apply the sync merges
         run: |
           gh pr create ${{ github.event.inputs.sync_repo }} \
           --head ${{ github.event.inputs.main_branch }}  \
