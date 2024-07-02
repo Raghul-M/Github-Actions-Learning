@@ -59,7 +59,7 @@ jobs:
 
     - name: Merge main into release
       run: |
-        git merge ${{ github.event.inputs.main_branch }} 
+        git merge ${{ github.event.inputs.main_branch }} --allow-unrelated-histories
         git commit -m "Sync to main Branch to release Branch"
     
     - name: Push changes
