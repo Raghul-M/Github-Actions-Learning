@@ -1,0 +1,73 @@
+name: Sync Release with Main and Create PR
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_repo:
+        description: 'Select Repository'
+        required: true
+        type: choice
+        options:
+          - 'Github-Actions-Learning'
+          - 'Test-GH'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      main_branch:
+        description: 'Main branch to pull from'
+        default: 'main'
+        required: true
+      release_branch:
+        description: 'Branch to push to [release branch]'
+        required: true
+
+env:
+  ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+  
+
+jobs:
+  sync-and-pr:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+          token: ${{ secrets.ACTIONS_PAT }}
+
+      - name: Sync release with main
+        run: |
+          git checkout ${{ github.event.inputs.main_branch }}
+          git pull origin ${{ github.event.inputs.main_branch }}
+          git checkout ${{ github.event.inputs.release_branch }}
+          git merge ${{ github.event.inputs.main_branch }}
+          git push origin ${{ github.event.inputs.release_branch }}
+
+      - name: Create PR
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.ACTIONS_PAT }}
+          script: |
+            github.issues.create({
+              owner: github.context.repo.owner,
+              repo: github.context.repo.repo,
+              title: 'Sync release with main',
+              body: 'Automated PR to sync release with main',
+              labels: ['automated', 'ync'],
+              assignees: ['your-username'], // optional
+              draft: false
+            })
+            github.pulls.create({
+              owner: github.context.repo.owner,
+              repo: github.context.repo.repo,
+              title: 'Sync release with main',
+              head: 'elease',
+              base: 'ain'
+            })
