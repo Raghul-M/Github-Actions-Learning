@@ -42,7 +42,7 @@ jobs:
         token: ${{ secrets.ACTIONS_PAT }}
 
     - name: Print current repository
-      run:  
+      run:  git remote -v
 
     - name: Set up Git
       run: |
