@@ -49,11 +49,17 @@ jobs:
     - name: Fetch all branches
       run: git fetch --all
 
-    - name: Create Sync PR
-      uses: sudoStatus200/create-sync-pr@0.3.1
-      with:
-        GITHUB_TOKEN: ${{secrets.ACTIONS_PAT}}
-        SOURCE_BRANCH: ${{ github.event.inputs.main_branch }}
-        TARGET_BRANCH: ${{ github.event.inputs.release_branch }}
+    - name: Checkout release branch
+      run: |
+        git fetch origin
+        git checkout ${{ github.event.inputs.release_branch }}
 
+    - name: Merge main into release
+      run: |
+        git merge origin/${{ github.event.inputs.main_branch }}
+        git commit -m "Sync to main Branch to release Bran"
     
+    - name: Push changes
+      if: success()
+      run: |
+        git push  ${{ github.event.inputs.release_branch }}
