@@ -63,15 +63,36 @@ jobs:
           from_branch: ${{ github.event.inputs.main_branch }}
           to_branch:  ${{ github.event.inputs.release_branch }}
       
+  
+
+      - name: Check if there are new commits
+        id: check-diff
+        run: |
+            git fetch origin
+            if git diff --quiet origin/${{ github.event.inputs.release_branch }}..origin/${{ github.event.inputs.main_branch }}; then
+              echo "No new commits to create a PR."
+              echo "new_commits=false" >> $GITHUB_ENV
+            else
+              echo "New commits found."
+              echo "new_commits=true" >> $GITHUB_ENV
+            fi
+  
+      - name: Install GitHub CLI
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y gh
+  
       - name: Create Pull Request to apply the sync merges
+        if: env.new_commits == 'true'
+        env:
+            GH_TOKEN: ${{ secrets.ACTIONS_PAT }}
         run: |
           gh pr create --repo Raghul-M/${{ github.event.inputs.sync_repo }} \
           --head ${{ github.event.inputs.main_branch }}  \
           --base ${{ github.event.inputs.release_branch }} \
           --title "Main to RElease branch merge commits" \
           --body "$(echo -e "This is an automated PR created by GitHub Actions from the branch ${{ github.event.inputs.release_branch }}")"
-        env:
-          GH_TOKEN: ${{ secrets.ACTIONS_PAT }}
+      
 
 
 
