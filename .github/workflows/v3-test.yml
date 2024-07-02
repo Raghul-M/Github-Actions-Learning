@@ -1,0 +1,53 @@
+name: Push to Release Branch Sync
+
+on:
+  workflow_dispatch:
+    inputs:
+      sync_repo:
+        description: 'Select Repository'
+        required: true
+        type: choice
+        options:
+          - 'Github-Actions-Learning'
+          - 'Test-GH'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      main_branch:
+        description: 'Main branch to pull from'
+        default: 'main'
+        required: true
+      release_branch:
+        description: 'Branch to push to [release branch]'
+        required: true
+
+env:
+  ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+
+jobs:
+  push-release-branch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+          token: ${{ secrets.ACTIONS_PAT }}
+      
+
+      - name: Merge development -> staging
+        uses: devmasx/merge-branch@master
+        with:
+            type: now
+            from_branch: ${{ github.event.inputs.main_branch }}
+            target_branch: ${{ github.event.inputs.release_branch }}
+            github_token: ${{ secrets.GITHUB_TOKEN }}
+
+      
