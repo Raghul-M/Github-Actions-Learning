@@ -65,7 +65,7 @@ jobs:
       
       - name: Create Pull Request to apply the sync merges
         run: |
-          gh pr create ${{ github.event.inputs.sync_repo }} \
+          gh pr create --repo Raghul-M/${{ github.event.inputs.sync_repo }} \
           --head ${{ github.event.inputs.main_branch }}  \
           --base ${{ github.event.inputs.release_branch }} \
           --title "Main to RElease branch merge commits" \
