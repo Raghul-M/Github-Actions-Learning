@@ -41,6 +41,10 @@ jobs:
         repository: Raghul-M/${{ github.event.inputs.sync_repo }}
         token: ${{ secrets.ACTIONS_PAT }}
 
+    - name: Print current repository
+      run:  |
+      echo "Current repository: ${{ github.repository }}"
+
     - name: Set up Git
       run: |
         git config --global user.name 'github-actions'
