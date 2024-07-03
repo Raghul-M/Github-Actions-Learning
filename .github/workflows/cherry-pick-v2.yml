@@ -80,7 +80,8 @@ jobs:
     - name: Add and fetch from upstream repo
       run: |
         git remote add upstream https://github.com/${{ steps.set-repo.outputs.source_repo }}.git
-        git fetch upstream ${{ github.event.inputs.source_branch }}
+        git fetch upstream 
+        git checkout ${{ github.event.inputs.target_branch }}
 
     - name: Cherry-pick the commit
       id: cherry_pick
