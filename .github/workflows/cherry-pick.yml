@@ -68,13 +68,12 @@ jobs:
         git config --global user.name "github-actions"
         git config --global user.email "github-actions@github.com"
 
-    - name: Checkout source repo
+    - name: Checkout target repo
       uses: actions/checkout@v4
       with:
-        repository: ${{ steps.set-repo.outputs.source_repo }}
+        repository: ${{ steps.set-repo.outputs.target_repo }}
         ref: ${{ github.event.inputs.source_branch }}
         token: ${{ secrets.ACTIONS_PAT }}
-        depth: 0
 
     - name: Checkout target branch
       run: |
