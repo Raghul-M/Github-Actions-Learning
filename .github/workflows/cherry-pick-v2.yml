@@ -1,27 +1,54 @@
 name: Push to Release Branch & Cherry Pick commits
 
 on:
-  workflow_dispatch:
-    inputs:
-      source_repo:
-        description: '[Upstream] source repository to cherry-pick from'
-        required: true
-        type: string
-      source_branch:
-        description: 'Upstream branch to cherry-pick from'
-        required: true
-        default: 'main'
-      cherry_pick_commit:
-        description: 'SHA of the commit to cherry-pick'
-        required: true
-      target_repo:
-        description: '[Downstream] Target repository to push to'
-        required: true
-        type: string
-      target_branch:
-        description: 'Target branch to push to'
-        required: true
-        default: 'release'
+    workflow_dispatch:
+      inputs:
+        source_repo:
+          description: '[Upstream] source repository to cherry-pick from'
+          required: true
+          type: choice
+          options:
+            - 'Testing-Cherrypick'
+            - 'openvino_model_server'
+            - 'kserve'
+            - 'modelmesh'
+            - 'caikit-tgis-serving'
+            - 'openvino'
+            - 'vllm'
+            - 'caikit-nlp'
+            - 'caikit'
+            - 'odh-model-controller'
+            - 'caikit-tgis-backend'
+            - 'caikit-nlp-client'
+            - 'model-registry'
+        source_branch:
+          description: 'Upstream branch to cherry-pick from'
+          required: true
+        cherry_pick_commits:
+          description: 'SHA(s) of the commit(s) to cherry-pick (space-separated)'
+          required: true
+        target_repo:
+          description: '[Downstream] Target repository to push to'
+          required: true
+          type: choice
+          options:
+            - 'Testing-Cherrypick'
+            - 'openvino_model_server'
+            - 'kserve'
+            - 'modelmesh'
+            - 'caikit-tgis-serving'
+            - 'openvino'
+            - 'vllm'
+            - 'caikit-nlp'
+            - 'caikit'
+            - 'odh-model-controller'
+            - 'caikit-tgis-backend'
+            - 'caikit-nlp-client'
+            - 'model-registry'
+        target_branch:
+          description: 'Target branch to push to'
+          required: true
+  
 
 permissions:
   contents: write
