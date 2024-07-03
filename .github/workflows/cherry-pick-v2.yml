@@ -86,7 +86,7 @@ jobs:
     - name: Cherry-pick the commit
       id: cherry_pick
       run: |
-        git cherry-pick ${{ github.event.inputs.cherry_pick_commit }} || echo "cherry_pick_failed=true" >> $GITHUB_ENV
+        git cherry-pick ${{ github.event.inputs.cherry_pick_commits }} || echo "cherry_pick_failed=true" >> $GITHUB_ENV
 
     - name: Handle cherry-pick result
       if: env.cherry_pick_failed == 'true'
