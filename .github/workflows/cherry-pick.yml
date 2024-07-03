@@ -79,7 +79,7 @@ jobs:
       with:
         repository: ${{ steps.set-repo.outputs.source_repo }}
         ref: ${{ github.event.inputs.source_branch }}
-        token: ${{ secrets.PAT_TOKEN }}
+        token: ${{ secrets.ACTIONS_PAT }}
 
     - name: Create a new branch for the PR
       run: |
@@ -94,7 +94,7 @@ jobs:
       with:
         repository: ${{ steps.set-repo.outputs.target_repo }}
         ref: ${{ github.event.inputs.target_branch }}
-        token: ${{ secrets.PAT_TOKEN }}
+        token: ${{ secrets.ACTIONS_PAT }}
         path: target-repo
 
     - name: Copy changes to target repo
@@ -110,12 +110,12 @@ jobs:
         git commit -m "Cherry-picked commits: ${{ github.event.inputs.cherry_pick_commits }}"
         git push origin pr-branch
       env:
-        GITHUB_TOKEN: ${{ secrets.PAT_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
 
     - name: Create Pull Request
       uses: peter-evans/create-pull-request@v3
       with:
-        token: ${{ secrets.PAT_TOKEN }}
+        token: ${{ secrets.ACTIONS_PAT }}
         commit-message: "Cherry-picked commits: ${{ github.event.inputs.cherry_pick_commits }}"
         base: ${{ github.event.inputs.target_branch }}
         head: pr-branch
