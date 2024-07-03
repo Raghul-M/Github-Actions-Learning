@@ -8,6 +8,7 @@ on:
         required: true
         type: choice
         options:
+          - 'Testing-Cherrypick'
           - 'openvino_model_server'
           - 'kserve'
           - 'modelmesh'
@@ -31,6 +32,7 @@ on:
         required: true
         type: choice
         options:
+          - 'Testing-Cherrypick'
           - 'openvino_model_server'
           - 'kserve'
           - 'modelmesh'
@@ -64,8 +66,8 @@ jobs:
     - name: Set repository names
       id: set-repo
       run: |
-        echo "source_repo=opendatahub-io/${{ github.event.inputs.source_repo }}" >> $GITHUB_OUTPUT
-        echo "target_repo=red-hat-data-services/${{ github.event.inputs.target_repo }}" >> $GITHUB_OUTPUT
+        echo "source_repo=CareerPod/${{ github.event.inputs.source_repo }}" >> $GITHUB_OUTPUT
+        echo "target_repo=Raghul-M/${{ github.event.inputs.target_repo }}" >> $GITHUB_OUTPUT
 
     - name: Configure Git
       run: |
