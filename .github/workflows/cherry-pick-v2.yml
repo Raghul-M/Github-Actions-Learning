@@ -99,6 +99,7 @@ jobs:
           echo "Cherry-pick encountered an error and was aborted"
           git cherry-pick --abort
           exit 1
+        fi
 
     - name: Push to release branch
       run: |
