@@ -47,9 +47,6 @@ jobs:
         with:
           node-version: '14'
 
-      - name: Install GitHub CLI
-        run: npm install -g gh
-
       - name: Print current repository
         run: git remote -v
 
