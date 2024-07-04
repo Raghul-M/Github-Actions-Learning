@@ -64,7 +64,7 @@ jobs:
 
       - name: Synchronize main into release branch
         run: |
-          gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }} --branch=${{ github.event.inputs.main_branch }} --allow-unrelated-histories
+          gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }} --branch=${{ github.event.inputs.main_branch }} 
 
       - name: Push changes
         if: success()
