@@ -46,9 +46,10 @@ jobs:
         uses: actions/setup-node@v1
         with:
           node-version: 14
-      - name: Create Sync PR
-        uses: sudoStatus200/create-sync-pr@0.3.1
+      - name: Opening pull request
+        id: pull
+        uses: tretuna/sync-branches@1.4.0
         with:
-          GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
-          SOURCE_BRANCH: ${{ github.event.inputs.main_branch }}
-          TARGET_BRANCH: ${{ github.event.inputs.release_branch }}
+            GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
+            FROM_BRANCH: "${{ github.event.inputs.main_branch }}"
+            TO_BRANCH: "${{ github.event.inputs.release_branch }}"
