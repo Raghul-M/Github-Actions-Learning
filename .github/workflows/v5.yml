@@ -62,6 +62,8 @@ jobs:
       - name: Synchronize main into release branch
         run: |
           gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }} --branch=${{ github.event.inputs.main_branch }} 
+        env:
+          ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
 
       - name: Push changes
         if: success()
