@@ -54,7 +54,7 @@ jobs:
       - name: Merge release into main
         run: |
               git checkout ${{ github.event.inputs.main_branch }}
-              git pull --rebase origin ${{ github.event.inputs.release_branch }}
-              git merge --no-commit --no-ff ${{ github.event.inputs.release_branch }}
+              git pull --rebase origin origin/${{ github.event.inputs.release_branch }}
+              git merge --no-commit --no-ff origin/${{ github.event.inputs.release_branch }}
               git commit -m "Automate Sync main with release"
               git push origin ${{ github.event.inputs.main_branch }}
