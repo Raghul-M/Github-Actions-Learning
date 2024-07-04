@@ -1,4 +1,4 @@
-name: Sync Release Branch with Main and Create PR
+name: Push to Release Branch Sync
 
 on:
   workflow_dispatch:
@@ -32,32 +32,43 @@ env:
   ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
 
 jobs:
-  sync-branches:
+  push-release-branch:
     runs-on: ubuntu-latest
-    name: Sync Release Branch with Main
     steps:
-      - name: Configure Git
-        run: |
-          git config --global user.name "github-actions"
-          git config --global user.email "github-actions@github.com"
-
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           repository: Raghul-M/${{ github.event.inputs.sync_repo }}
           token: ${{ secrets.ACTIONS_PAT }}
-          fetch-depth: 0
-          
+      
+      - name: Set up GitHub CLI
+        uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+
+      - name: Install GitHub CLI
+        run: npm install -g gh
+
+      - name: Print current repository
+        run: git remote -v
+
+      - name: Set up Git
+        run: |
+          git config --global user.name 'github-actions'
+          git config --global user.email 'github-actions@github.com'
+
       - name: Fetch all branches
         run: git fetch --all
 
-      - name: Update remote tracking information
-        run: git remote update origin
-
-      - name: Merge release into main
+      - name: Checkout release branch
         run: |
-          git checkout ${{ github.event.inputs.main_branch }}
-          git pull --rebase origin ${{ github.event.inputs.main_branch }}
-          git merge --no-ff ${{ github.event.inputs.release_branch }}
-          git commit -m "Automate Sync main with release" || echo "No changes to commit"
-          git push origin ${{ github.event.inputs.main_branch }}
+          git checkout ${{ github.event.inputs.release_branch }}
+
+      - name: Synchronize main into release branch
+        run: |
+          gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }} --branch=${{ github.event.inputs.main_branch }} --allow-unrelated-histories
+
+      - name: Push changes
+        if: success()
+        run: |
+          git push origin ${{ github.event.inputs.release_branch }}
