@@ -36,24 +36,21 @@ jobs:
   push-release-branch:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          repository: Raghul-M/${{ github.event.inputs.sync_repo }}
-          token: ${{ secrets.ACTIONS_PAT }}
-      
-      - name: Set up GitHub CLI
-        uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-
-      - name: Print current repository
-        run: git remote -v
 
       - name: Set up Git
         run: |
           git config --global user.name 'github-actions'
           git config --global user.email 'github-actions@github.com'
+
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+            repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+            token: ${{ secrets.ACTIONS_PAT }}
+
+      
+      - name: Print current repository
+        run: git remote -v
 
       - name: Fetch all branches
         run: git fetch --all
