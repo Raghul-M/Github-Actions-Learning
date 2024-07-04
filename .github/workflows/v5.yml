@@ -36,20 +36,25 @@ jobs:
     runs-on: ubuntu-latest
     name: Syncing branches
     steps:
+      - name: Configure Git
+        run: |
+          git config --global user.name "github-actions"
+          git config --global user.email "github-actions@github.com"
+
       - name: Checkout
         uses: actions/checkout@v4
         with:
           repository: Raghul-M/${{ github.event.inputs.sync_repo }}
           token: ${{ secrets.ACTIONS_PAT }}
+      
+      - name: Fetch all branches
+        run: git fetch --all
 
-      - name: Set up Node
-        uses: actions/setup-node@v1
-        with:
-          node-version: 14
-      - name: Opening pull request
-        id: pull
-        uses: tretuna/sync-branches@1.4.0
-        with:
-            GITHUB_TOKEN: ${{ secrets.ACTIONS_PAT }}
-            FROM_BRANCH: "${{ github.event.inputs.main_branch }}"
-            TO_BRANCH: "${{ github.event.inputs.release_branch }}"
+
+      - name: Merge release into main
+        run: |
+              git checkout ${{ github.event.inputs.main_branch }}
+              git pull origin ${{ github.event.inputs.release_branch }}
+              git merge --no-commit --no-ff ${{ github.event.inputs.release_branch }}
+              git commit -m "Automate Sync main with release"
+              git push origin ${{ github.event.inputs.main_branch }}
