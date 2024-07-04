@@ -9,6 +9,7 @@ on:
         type: choice
         options:
           - 'Github-Actions-Learning'
+          - 'Test-Sync'
           - 'Test-GH'
           - 'modelmesh'
           - 'caikit-tgis-serving'
