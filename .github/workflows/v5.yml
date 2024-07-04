@@ -49,6 +49,9 @@ jobs:
       
       - name: Fetch all branches
         run: git fetch --all
+      
+      - name: Update remote tracking information
+        run: git remote update origin
 
 
       - name: Merge release into main
