@@ -59,14 +59,13 @@ jobs:
         run: |
           git checkout ${{ github.event.inputs.release_branch }}
 
-      - name: Synchronize main into release branch
+      - name: Rebase main onto release branch
         run: |
-          git merge ${{ github.event.inputs.main_branch }}
-          
+            git rebase origin/${{ github.event.inputs.main_branch }} 
 
       - name: Push changes
         run: |
-          git push origin ${{ github.event.inputs.release_branch }}
+          git push origin ${{ github.event.inputs.release_branch }} --force
 
       - name: Push changes and Create pull request
         if: success()
