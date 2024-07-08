@@ -61,11 +61,23 @@ jobs:
 
       - name: Synchronize main into release branch
         run: |
-          gh repo sync Raghul-M/${{ github.event.inputs.sync_repo }} --branch=${{ github.event.inputs.main_branch }} 
-        env:
-          ACTIONS_PAT: ${{ secrets.ACTIONS_PAT }}
+          git merge ${{ github.event.inputs.main_branch }}
+          
 
       - name: Push changes
-        if: success()
         run: |
           git push origin ${{ github.event.inputs.release_branch }}
+
+      - name: Push changes and Create pull request
+        if: success()
+        uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            github.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: 'Sync main to release',
+              head: ${{ github.event.inputs.release_branch }},
+              base: ${{ github.event.inputs.main_branch }}
+            })          
