@@ -3,14 +3,18 @@ name: Push to Release Branch Sync
 on:
   workflow_dispatch:
     inputs:
+      org:
+        description: 'Select Organization'
+        required: true
+        type: choice
+        options:
+          - 'opendatahub.io'
+          - 'red-hat-data-services'
       sync_repo:
         description: 'Select Repository'
         required: true
         type: choice
         options:
-          - 'Github-Actions-Learning'
-          - 'Test-Sync'
-          - 'Test-GH'
           - 'modelmesh'
           - 'caikit-tgis-serving'
           - 'openvino'
@@ -45,7 +49,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
-            repository: Raghul-M/${{ github.event.inputs.sync_repo }}
+            repository: ${{ github.event.inputs.org }}/${{ github.event.inputs.sync_repo }}
             token: ${{ secrets.ACTIONS_PAT }}
 
       
@@ -67,16 +71,4 @@ jobs:
         run: |
           git push origin ${{ github.event.inputs.release_branch }} --force
 
-      - name: Push changes and Create pull request
-        if: success()
-        uses: actions/github-script@v6
-        with:
-          github-token: ${{ secrets.GITHUB_TOKEN }}
-          script: |
-            github.pulls.create({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              title: 'Sync main to release',
-              head: ${{ github.event.inputs.release_branch }},
-              base: ${{ github.event.inputs.main_branch }}
-            })          
+             
