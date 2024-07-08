@@ -1,0 +1,111 @@
+name: Push to Release Branch & Cherry Pick commits
+
+on:
+  workflow_dispatch:
+    inputs:
+      source_repo:
+        description: '[Upstream] source repository to cherry-pick from'
+        required: true
+        type: choice
+        options:
+          - 'Testing-Cherrypick'
+          - 'openvino_model_server'
+          - 'kserve'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      source_branch:
+        description: 'Upstream branch to cherry-pick from'
+        required: true
+      cherry_pick_commits:
+        description: 'SHA(s) of the commit(s) to cherry-pick (space-separated)'
+        required: true
+      target_repo:
+        description: '[Downstream] Target repository to push to'
+        required: true
+        type: choice
+        options:
+          - 'Testing-Cherrypick'
+          - 'openvino_model_server'
+          - 'kserve'
+          - 'modelmesh'
+          - 'caikit-tgis-serving'
+          - 'openvino'
+          - 'vllm'
+          - 'caikit-nlp'
+          - 'caikit'
+          - 'odh-model-controller'
+          - 'caikit-tgis-backend'
+          - 'caikit-nlp-client'
+          - 'model-registry'
+      target_branch:
+        description: 'Target branch to push to'
+        required: true
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  cherry-pick-and-create-pr:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set repository names
+      id: set-repo
+      run: |
+        echo "source_repo=CareerPod/${{ github.event.inputs.source_repo }}" >> $GITHUB_OUTPUT
+        echo "target_repo=Raghul-M/${{ github.event.inputs.target_repo }}" >> $GITHUB_OUTPUT
+
+    - name: Configure Git
+      run: |
+        git config --global user.name "github-actions"
+        git config --global user.email "github-actions@github.com"
+
+    - name: Checkout target repo
+      uses: actions/checkout@v4
+      with:
+        repository: ${{ steps.set-repo.outputs.target_repo }}
+        ref: ${{ github.event.inputs.source_branch }}
+        token: ${{ secrets.ACTIONS_PAT }}
+
+    - name: Fetch all branches
+      run: git fetch --all
+
+    - name: Checkout target branch
+      run: git checkout ${{ github.event.inputs.target_branch }}
+
+    - name: Cherry-pick commits
+      id: cherry_pick
+      run: |
+        echo "Cherry-picking commits: ${{ github.event.inputs.cherry_pick_commits }}"
+        git cherry-pick ${{ github.event.inputs.cherry_pick_commits }} || echo "cherry_pick_failed=true" >> $GITHUB_ENV
+
+    - name: Handle cherry-pick result
+      if: env.cherry_pick_failed == 'true'
+      run: |
+        echo "Handling cherry-pick result"
+        if git cherry-pick --continue; then
+          echo "Cherry-pick continued successfully"
+        elif git cherry-pick --skip; then
+          echo "Cherry-pick was skipped"
+        else
+          echo "Cherry-pick encountered an error and was aborted"
+          git cherry-pick --abort
+          exit 1
+        fi
+
+    - name: Push to release branch
+      run: |
+        echo "Setting remote URL with personal access token"
+        git remote set-url origin https://x-access-token:${{ secrets.ACTIONS_PAT }}@github.com/${{ steps.set-repo.outputs.target_repo }}.git
+        echo "Pushing changes to branch: ${{ github.event.inputs.target_branch }}"
+        git push origin ${{ github.event.inputs.target_branch }}
+
+

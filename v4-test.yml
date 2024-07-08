@@ -56,14 +56,34 @@ jobs:
       - name: Check the branches
         run: git branch -a
         
-      - name: Merge Master to Production branch
+      - name: Merge Main to Release branch
         uses: devvspaces/merge-branches@v1
         with:
           token: ${{ github.token }}
           from_branch: ${{ github.event.inputs.main_branch }}
           to_branch:  ${{ github.event.inputs.release_branch }}
-
       
+  
+
+      - name: Pushing the Changes
+        run: git push origin ${{ github.event.inputs.release_branch }}
+        
+  
+      - name: Install GitHub CLI
+        run: |
+            sudo apt-get update
+            sudo apt-get install -y gh
+  
+      - name: Create Pull Request to apply the sync merges
+        env:
+            GH_TOKEN: ${{ secrets.ACTIONS_PAT }}
+        run: |
+          gh pr create --repo Raghul-M/${{ github.event.inputs.sync_repo }} \
+          --head ${{ github.event.inputs.main_branch }}  \
+          --base ${{ github.event.inputs.release_branch }} \
+          --title "Main to RElease branch merge commits" \
+          --body "$(echo -e "This is an automated PR created by GitHub Actions from the branch ${{ github.event.inputs.release_branch }}")"
+ 
 
 
 
