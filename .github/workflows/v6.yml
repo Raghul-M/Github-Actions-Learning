@@ -74,6 +74,6 @@ jobs:
 
       - name: Push changes
         run: |
-          git push origin ${{ github.event.inputs.release_branch }} --force
+          git push origin ${{ github.event.inputs.release_branch }} --force 
 
              
