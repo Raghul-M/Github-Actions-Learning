@@ -62,7 +62,7 @@ jobs:
 
 
       - name: Sync
-      - uses: TobKed/github-forks-sync-action@master
+        uses: TobKed/github-forks-sync-action@master
         with:
           github_token: ${{ secrets.ACTIONS_PAT }}
           upstream_repository: ${{ github.event.inputs.org }}/${{ github.event.inputs.sync_repo }}
